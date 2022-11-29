@@ -1,0 +1,26 @@
+description: Resource Creation for Kubernetes Project
+heat_template_version: '2021-04-16'
+resources:
+  kube_project:
+    type: OS::Keystone::Project
+    properties:
+      name: kubernetes
+      domain: default
+      enabled: true
+
+  kube_user:
+    type: OS::Keystone::User
+    properties:
+      name: kubeuser
+      password: redhat
+
+  kube_user_roleassignment:
+    type: OS::Keystone::UserRoleAssignment
+    properties:
+      user:
+        get_resource: kube_user
+      roles:
+        - project:
+            get_resource: kube_project
+          role: admin
+
