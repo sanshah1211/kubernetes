@@ -141,7 +141,7 @@
         - net: k8s_private
           subnet: k8s_private
   
-    - name: "ICMP Rules for Kubernetes VM"
+  - name: "ICMP Rules for Kubernetes VM"
     openstack.cloud.security_group_rule:
       auth:
         auth_url: http://10.0.10.200:5000/v3
