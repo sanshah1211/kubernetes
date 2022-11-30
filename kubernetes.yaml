@@ -279,7 +279,7 @@
       flavor: "'{{ env }}'-master"
       key_name: master-key
       auto_ip: false
-      security_groups: "{{ prj }}"
+      security_groups: "{{ env }}"
       network: "'{{ env }}'-private"
       wait: true
       timeout: 300
