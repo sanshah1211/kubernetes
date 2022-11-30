@@ -140,6 +140,18 @@
       interfaces:
         - net: k8s_private
           subnet: k8s_private
+
+  - name: "Security Group for Kubernetes VMs"
+    openstack.cloud.security_group:
+      auth: 
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      name: kubernetes
+      project: kubernetes
   
   - name: "ICMP Rules for Kubernetes VM"
     openstack.cloud.security_group_rule:
