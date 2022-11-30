@@ -12,7 +12,7 @@
         user_domain_name: Default
       name: k8s
       state: present
-      filename: /home/ubuntu/builder/builder/Rocky-9-GenericCloud-9.0-20220830.0.x86_64.qcow2
+      filename: /home/rocky/Rocky-9-GenericCloud.latest.x86_64.qcow2
 
   - name: "Kube Master Flavor"
     openstack.cloud.compute_flavor:
@@ -54,7 +54,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: master_key
-      public_key_file: /home/ubuntu/.ssh/master.pub
+      public_key_file: /home/rocky/.ssh/master.pub
 
   - name: "Keypair creation for Worker Node Login"
     openstack.cloud.keypair:
@@ -66,7 +66,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: worker_key
-      public_key_file: /home/ubuntu/.ssh/worker.pub
+      public_key_file: /home/rocky/.ssh/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
@@ -141,5 +141,64 @@
         - net: k8s_private
           subnet: k8s_private
   
+    - name: "ICMP Rules for Kubernetes VM"
+    openstack.cloud.security_group_rule:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      security_group: kubernetes
+      ethertype: IPv4
+      protocol: icmp
+
+  - name: "Ingress SSH Rule for Kubernetes VM"
+    openstack.cloud.security_group_rule:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      security_group: kubernetes
+      ethertype: IPv4
+      protocol: tcp
+      direction: ingress
+      port_range_min: 22
+      port_range_max: 22
+
+  - name: "Ingress HTTP Rule for Kubernetes VM"
+    openstack.cloud.security_group_rule:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      security_group: kubernetes
+      ethertype: IPv4
+      protocol: tcp
+      direction: ingress
+      port_range_min: 80
+      port_range_max: 80
+
+  - name: "Egress Rule for Kubernetes VM"
+    openstack.cloud.security_group_rule:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      security_group: kubernetes
+      ethertype: IPv4
+      protocol: any
+      direction: egress
+
   
 
