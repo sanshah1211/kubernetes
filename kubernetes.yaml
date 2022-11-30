@@ -216,7 +216,7 @@
     openstack.cloud.volume:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
@@ -232,7 +232,7 @@
     openstack.cloud.volume:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
@@ -264,7 +264,7 @@
     openstack.cloud.server:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
@@ -286,7 +286,7 @@
     openstack.cloud.server:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
@@ -309,7 +309,7 @@
     openstack.cloud.floating_ip:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
@@ -323,7 +323,7 @@
     openstack.cloud.floating_ip:
       auth:
         auth_url: http://10.0.10.200:5000/v3
-        username: kubernetes
+        username: kubeuser
         password: redhat
         project_name: kubernetes
         project_domain_name: Default
