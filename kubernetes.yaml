@@ -1,84 +1,84 @@
-...
-. hosts: openstack
+---
+- hosts: openstack
   vars.files:
-    . ./vars/"{ env }}".vars.yaml
+    - ./vars/k8s_vars.yaml
   tasks:
-  . name: "Rocky Linux 9 Image Upload"
+  - name: "Rocky Linux 9 Image Upload"
     openstack.cloud.image:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".Rocky
       state: present
       filename: /home/rocky/Rocky.9.GenericCloud.latest.x86.64.qcow2
 
-  . name: "Kube Master Flavor"
+  - name: "Kube Master Flavor"
     openstack.cloud.compute.flavor:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       disk: 80
       name: "{{ env }}".master
       ram: 8192
       vcpus: 4
       state: present
 
-  . name: "Kuber Worker Flavor"
+  - name: "Kuber Worker Flavor"
     openstack.cloud.compute.flavor:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       disk: 80
       name: "{{ env }}".worker
       ram: 8192
       vcpus: 4
       state: present
 
-  . name: "Keypair creation for Master Node Login"
+  - name: "Keypair creation for Master Node Login"
     openstack.cloud.keypair:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".key.master
       public.key.file: /home/rocky/.ssh/master.pub
 
-  . name: "Keypair creation for Worker Node Login"
+  - name: "Keypair creation for Worker Node Login"
     openstack.cloud.keypair:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".key.worker
       public.key.file: /home/rocky/.ssh/worker.pub
 
-  . name: "External Network Creation for Kubernetes Project"
+  - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".public
       external: true
       project: "{{ prj }}"
@@ -86,97 +86,97 @@
       provider.segmentation.id: 20
       provider.physical.network: physnet1
 
-  . name: "Subnet for External Network"
+  - name: "Subnet for External Network"
     openstack.cloud.subnet:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       network.name: "{{ env }}".public
       name: "{{ env }}".public
       cidr: 10.20.0.0/24
       gateway.ip: 10.20.0.1
       enable.dhcp: yes
 
-  . name: "External Network Creation for Kubernetes Project"
+  - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".private
       project: "{{ prj }}"
 
-  . name: "Subnet for Private Network"
+  - name: "Subnet for Private Network"
     openstack.cloud.subnet:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       network.name: "{{ env }}".private
       name: "{{ env }}".private
       cidr: 10.2.0.0/24
       gateway.ip: 10.2.0.1
       enable.dhcp: yes
 
-  . name: "Router for Kubernetes Project"
+  - name: "Router for Kubernetes Project"
     openstack.cloud.router:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}"
       network: "{{ env }}".public
       interfaces:
         . net: "{{ env }}".private
           subnet: "{{ env }}".private
 
-  . name: "Security Group for Kubernetes VMs"
+  - name: "Security Group for Kubernetes VMs"
     openstack.cloud.security.group:
       auth: 
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}"
       project: "{{ prj }}"
   
-  . name: "ICMP Rules for Kubernetes VM"
+  - name: "ICMP Rules for Kubernetes VM"
     openstack.cloud.security.group.rule:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       security.group: "{{ env }}"
       ethertype: IPv4
       protocol: icmp
 
-  . name: "Ingress SSH Rule for Kubernetes VM"
+  - name: "Ingress SSH Rule for Kubernetes VM"
     openstack.cloud.security.group.rule:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       security.group: "{{ env }}"
       ethertype: IPv4
       protocol: tcp
@@ -184,15 +184,15 @@
       port.range.min: 22
       port.range.max: 22
 
-  . name: "Ingress HTTP Rule for Kubernetes VM"
+  - name: "Ingress HTTP Rule for Kubernetes VM"
     openstack.cloud.security.group.rule:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       security.group: "{{ env }}"
       ethertype: IPv4
       protocol: tcp
@@ -200,29 +200,29 @@
       port.range.min: 80
       port.range.max: 80
 
-  . name: "Egress Rule for Kubernetes VM"
+  - name: "Egress Rule for Kubernetes VM"
     openstack.cloud.security.group.rule:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       security.group: "{{ env }}"
       ethertype: IPv4
       protocol: any
       direction: egress
 
-  . name: "Create Volume for Kubernetes Master VM"
+  - name: "Create Volume for Kubernetes Master VM"
     openstack.cloud.volume:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".master.v1
       size: 80
       volume.type: synelogy
@@ -230,15 +230,15 @@
       wait: true
       timeout: 180
 
-  . name: "Create Volume for Kubernetes Worker VM"
+  - name: "Create Volume for Kubernetes Worker VM"
     openstack.cloud.volume:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: "{{ env }}".worker.v1
       size: 80
       volume.type: synelogy
@@ -250,27 +250,27 @@
 #  . name: "Floating IP Attachment for Jenkins VM"
 #    openstack.cloud.floating.ip:
 #      auth:
-#        auth.url: http://10.0.10.200:5000/v3
+#        auth_url: http://10.0.10.200:5000/v3
 #        username: "{{ prj }}"
 #        password: redhat
-#        project.name: "{{ prj }}"
-#        project.domain.name: Default
-#        user.domain.name: Default
+#        project_name: "{{ prj }}"
+#        project_domain_name: Default
+#        user_domain_name: Default
 #      name: jenkins.fip
 #      network: "{{ prj }}".public
 #      net.destination: "{{ prj }}".private
 #      wait: true
 
 
-  . name: "Create Kubernetes Master VM on Openstack"
+  - name: "Create Kubernetes Master VM on Openstack"
     openstack.cloud.server:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: kube.master
       state: present
       image: "{{ env }}"
@@ -284,15 +284,15 @@
       wait: true
       timeout: 300
 
-  . name: "Create Kubernetes Worker VM on Openstack"
+  - name: "Create Kubernetes Worker VM on Openstack"
     openstack.cloud.server:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       name: kube.worker
       state: present
       image: "{{ env }}"
@@ -307,29 +307,29 @@
       timeout: 300
 
 
-  . name: "Floating IP Attachment for Kubernetes Master VM"
+  - name: "Floating IP Attachment for Kubernetes Master VM"
     openstack.cloud.floating.ip:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       server: "{{ env }}".master
       network: "{{ env }}".public
       nat.destination: "{{ env }}".private
       wait: true
 
-  . name: "Floating IP Attachment for Kubernetes Worker VM"
+  - name: "Floating IP Attachment for Kubernetes Worker VM"
     openstack.cloud.floating.ip:
       auth:
-        auth.url: http://10.0.10.200:5000/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
-        project.name: "{{ prj }}"
-        project.domain.name: Default
-        user.domain.name: Default
+        project_name: "{{ prj }}"
+        project_domain_name: Default
+        user_domain_name: Default
       server: "{{ env }}".worker
       network: "{{ env }}".public
       nat.destination: "{{ env }}".private
