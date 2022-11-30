@@ -12,7 +12,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".Rocky
+      name: "{{ env }}"
       state: present
       filename: /home/rocky/Rocky.9.GenericCloud.latest.x86.64.qcow2
 
@@ -26,7 +26,7 @@
         project_domain_name: Default
         user_domain_name: Default
       disk: 80
-      name: "{{ env }}".master
+      name: "'{{ env }}'-master"
       ram: 8192
       vcpus: 4
       state: present
@@ -41,7 +41,7 @@
         project_domain_name: Default
         user_domain_name: Default
       disk: 80
-      name: "{{ env }}".worker
+      name: "'{{ env }}'-worker"
       ram: 8192
       vcpus: 4
       state: present
@@ -55,7 +55,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".key.master
+      name: "'{{ env }}'-masterkey"
       public_key_file: /home/rocky/.ssh/master.pub
 
   - name: "Keypair creation for Worker Node Login"
@@ -67,7 +67,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".key.worker
+      name: "'{{ env }}'-workerkey"
       public_key_file: /home/rocky/.ssh/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
@@ -79,7 +79,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}"_public
+      name: "'{{ env }}'-public"
       external: true
       project: "{{ prj }}"
       provider_network_type: vlan
@@ -95,8 +95,8 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      network_name: "{{ env }}".public
-      name: "{{ env }}".public
+      network_name: "'{{ env }}'-public"
+      name: "'{{ env }}'-public"
       cidr: 10.20.0.0/24
       gateway_ip: 10.20.0.1
       enable_dhcp: yes
@@ -110,7 +110,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".private
+      name: "'{{ env }}'-private"
       project: "{{ prj }}"
 
   - name: "Subnet for Private Network"
@@ -122,8 +122,8 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      network_name: "{{ env }}".private
-      name: "{{ env }}".private
+      network_name: "'{{ env }}'-private"
+      name: "'{{ env }}'-private"
       cidr: 10.2.0.0/24
       gateway_ip: 10.2.0.1
       enable_dhcp: yes
@@ -138,10 +138,10 @@
         project_domain_name: Default
         user_domain_name: Default
       name: "{{ env }}"
-      network: "{{ env }}".public
+      network: "'{{ env }}'-public"
       interfaces:
-        - net: "{{ env }}".private
-          subnet: "{{ env }}".private
+        - net: "'{{ env }}'-private"
+          subnet: "'{{ env }}'-private"
 
   - name: "Security Group for Kubernetes VMs"
     openstack.cloud.security_group:
@@ -223,7 +223,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".master.v1
+      name: "'{{ env }}'-master-v1"
       size: 80
       volume_type: synelogy
       state: present
@@ -239,7 +239,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".worker.v1
+      name: "'{{ env }}'-worker-v1"
       size: 80
       volume_type: synelogy
       state: present
@@ -276,11 +276,11 @@
       image: "{{ env }}"
       boot_from_volume: true
       volume_size: 80
-      flavor: "{{ env }}".master
-      key_name: "{{ env }}".key.worker
+      flavor: "'{{ env }}'-master"
+      key_name: "'{{ env }}'-masterkey"
       auto_ip: false
       security_groups: "{{ prj }}"
-      network: "{{ env }}".private
+      network: "'{{ env }}'-private"
       wait: true
       timeout: 300
 
@@ -298,11 +298,11 @@
       image: "{{ env }}"
       boot_from_volume: true
       volume_size: 80
-      flavor: "{{ env }}".worker
-      key_name: "{{ env }}".key.worker
+      flavor: "'{{ env }}'-worker"
+      key_name: "'{{ env }}'-workerkey"
       auto_ip: false
       security_groups: "{{ env }}"
-      network: "{{ env }}".private
+      network: "'{{ env }}'-private"
       wait: true
       timeout: 300
 
@@ -316,9 +316,9 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      server: "{{ env }}".master
-      network: "{{ env }}".public
-      nat_destination: "{{ env }}".private
+      server: "'{{ env }}'-master"
+      network: "'{{ env }}'-public"
+      nat_destination: "'{{ env }}'-private"
       wait: true
 
   - name: "Floating IP Attachment for Kubernetes Worker VM"
@@ -330,9 +330,9 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      server: "{{ env }}".worker
-      network: "{{ env }}".public
-      nat_destination: "{{ env }}".private
+      server: "'{{ env }}'-worker"
+      network: "'{{ env }}'-public"
+      nat_destination: "'{{ env }}'-private"
       wait: true
 
 
