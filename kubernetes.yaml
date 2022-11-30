@@ -316,7 +316,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      server: "'{{ env }}'-master"
+      server: kube.master
       network: "'{{ env }}'-public"
       nat_destination: "'{{ env }}'-private"
       wait: true
@@ -330,7 +330,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      server: "'{{ env }}'-worker"
+      server: kube.worker
       network: "'{{ env }}'-public"
       nat_destination: "'{{ env }}'-private"
       wait: true
