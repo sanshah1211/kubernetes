@@ -271,7 +271,7 @@
         user_domain_name: Default
       name: kube-master
       state: present
-      image: kubernetes
+      image: k8s
       boot_from_volume: true
       volume_size: 80
       flavor: kubernetes
@@ -293,7 +293,7 @@
         user_domain_name: Default
       name: kube-worker
       state: present
-      image: kubernetes
+      image: k8s
       boot_from_volume: true
       volume_size: 80
       flavor: k8s_worker
