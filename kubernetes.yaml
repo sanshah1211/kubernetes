@@ -4,7 +4,7 @@
   - name: "Rocky Linux 9 Image Upload"
     openstack.cloud.image:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -17,7 +17,7 @@
   - name: "Kube Master Flavor"
     openstack.cloud.compute_flavor:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -32,7 +32,7 @@
   - name: "Kuber Worker Flavor"
     openstack.cloud.compute_flavor:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -47,7 +47,7 @@
   - name: "Keypair creation for Master Node Login"
     openstack.cloud.keypair:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -59,7 +59,7 @@
   - name: "Keypair creation for Worker Node Login"
     openstack.cloud.keypair:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -71,7 +71,7 @@
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -87,7 +87,7 @@
   - name: "Subnet for External Network"
     openstack.cloud.subnet:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -102,7 +102,7 @@
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -114,7 +114,7 @@
   - name: "Subnet for Private Network"
     openstack.cloud.subnet:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
@@ -129,7 +129,7 @@
   - name: "Router for Kubernetes Project"
     openstack.cloud.router:
       auth:
-        auth_url: http://10.0.10.200:35357/v3
+        auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
         password: redhat
         project_name: kubernetes
