@@ -212,5 +212,125 @@
       protocol: any
       direction: egress
 
-  
+  - name: "Create Volume for Kubernetes Master VM"
+    openstack.cloud.volume:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      name: master_v1
+      size: 80
+      volume_type: synelogy
+      state: present
+      wait: true
+      timeout: 180
+
+  - name: "Create Volume for Kubernetes Worker VM"
+    openstack.cloud.volume:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      name: worker_v1
+      size: 80
+      volume_type: synelogy
+      state: present
+      wait: true
+      timeout: 180
+
+
+#  - name: "Floating IP Attachment for Jenkins VM"
+#    openstack.cloud.floating_ip:
+#      auth:
+#        auth_url: http://10.0.10.200:5000/v3
+#        username: kubernetes
+#        password: redhat
+#        project_name: kubernetes
+#        project_domain_name: Default
+#        user_domain_name: Default
+#      name: jenkins_fip
+#      network: kubernetes_public
+#      net_destination: kubernetes_private
+#      wait: true
+
+
+  - name: "Create Kubernetes Master VM on Openstack"
+    openstack.cloud.server:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      name: kube-master
+      state: present
+      image: kubernetes
+      boot_from_volume: true
+      volume_size: 80
+      flavor: kubernetes
+      key_name: master_key
+      auto_ip: false
+      security_groups: kubernetes
+      network: k8s_private
+      wait: true
+      timeout: 300
+
+  - name: "Create Kubernetes Worker VM on Openstack"
+    openstack.cloud.server:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      name: kube-worker
+      state: present
+      image: kubernetes
+      boot_from_volume: true
+      volume_size: 80
+      flavor: k8s_worker
+      key_name: worker_key
+      auto_ip: false
+      security_groups: kubernetes
+      network: k8s_private
+      wait: true
+      timeout: 300
+
+
+  - name: "Floating IP Attachment for Kubernetes Master VM"
+    openstack.cloud.floating_ip:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      server: kube-master
+      network: k8s_public
+      nat_destination: k8s_private
+      wait: true
+
+  - name: "Floating IP Attachment for Kubernetes Worker VM"
+    openstack.cloud.floating_ip:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubernetes
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      server: kube-worker
+      network: k8s_public
+      nat_destination: k8s_private
+      wait: true
+
 
