@@ -55,7 +55,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "'{{ env }}'masterkey"
+      name: master-key
       public_key_file: /home/rocky/.ssh/master.pub
 
   - name: "Keypair creation for Worker Node Login"
@@ -67,7 +67,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "'{{ env }}'workerkey"
+      name: worker-key
       public_key_file: /home/rocky/.ssh/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
@@ -277,7 +277,7 @@
       boot_from_volume: true
       volume_size: 80
       flavor: "'{{ env }}'-master"
-      key_name: "'{{ env }}'masterkey"
+      key_name: master-key
       auto_ip: false
       security_groups: "{{ prj }}"
       network: "'{{ env }}'-private"
@@ -299,7 +299,7 @@
       boot_from_volume: true
       volume_size: 80
       flavor: "'{{ env }}'-worker"
-      key_name: "'{{ env }}'workerkey"
+      key_name: worker-key
       auto_ip: false
       security_groups: "{{ env }}"
       network: "'{{ env }}'-private"
