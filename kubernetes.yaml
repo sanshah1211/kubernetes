@@ -17,7 +17,7 @@
       filename: /home/rocky/Rocky.9.GenericCloud.latest.x86.64.qcow2
 
   - name: "Kube Master Flavor"
-    openstack.cloud.compute.flavor:
+    openstack.cloud.compute_flavor:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -32,7 +32,7 @@
       state: present
 
   - name: "Kuber Worker Flavor"
-    openstack.cloud.compute.flavor:
+    openstack.cloud.compute_flavor:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -56,7 +56,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: "{{ env }}".key.master
-      public.key.file: /home/rocky/.ssh/master.pub
+      public_key_file: /home/rocky/.ssh/master.pub
 
   - name: "Keypair creation for Worker Node Login"
     openstack.cloud.keypair:
@@ -68,7 +68,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: "{{ env }}".key.worker
-      public.key.file: /home/rocky/.ssh/worker.pub
+      public_key_file: /home/rocky/.ssh/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
@@ -79,12 +79,12 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      name: "{{ env }}".public
+      name: "{{ env }}"_public
       external: true
       project: "{{ prj }}"
-      provider.network.type: vlan
-      provider.segmentation.id: 20
-      provider.physical.network: physnet1
+      provider_network_type: vlan
+      provider_segmentation_id: 20
+      provider_physical_network: physnet1
 
   - name: "Subnet for External Network"
     openstack.cloud.subnet:
@@ -95,11 +95,11 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      network.name: "{{ env }}".public
+      network_name: "{{ env }}".public
       name: "{{ env }}".public
       cidr: 10.20.0.0/24
-      gateway.ip: 10.20.0.1
-      enable.dhcp: yes
+      gateway_ip: 10.20.0.1
+      enable_dhcp: yes
 
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
@@ -122,11 +122,11 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      network.name: "{{ env }}".private
+      network_name: "{{ env }}".private
       name: "{{ env }}".private
       cidr: 10.2.0.0/24
-      gateway.ip: 10.2.0.1
-      enable.dhcp: yes
+      gateway_ip: 10.2.0.1
+      enable_dhcp: yes
 
   - name: "Router for Kubernetes Project"
     openstack.cloud.router:
@@ -140,11 +140,11 @@
       name: "{{ env }}"
       network: "{{ env }}".public
       interfaces:
-        . net: "{{ env }}".private
+        - net: "{{ env }}".private
           subnet: "{{ env }}".private
 
   - name: "Security Group for Kubernetes VMs"
-    openstack.cloud.security.group:
+    openstack.cloud.security_group:
       auth: 
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -156,7 +156,7 @@
       project: "{{ prj }}"
   
   - name: "ICMP Rules for Kubernetes VM"
-    openstack.cloud.security.group.rule:
+    openstack.cloud.security_group_rule:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -164,12 +164,12 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      security.group: "{{ env }}"
+      security_group: "{{ env }}"
       ethertype: IPv4
       protocol: icmp
 
   - name: "Ingress SSH Rule for Kubernetes VM"
-    openstack.cloud.security.group.rule:
+    openstack.cloud.security_group_rule:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -177,15 +177,15 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      security.group: "{{ env }}"
+      security_group: "{{ env }}"
       ethertype: IPv4
       protocol: tcp
       direction: ingress
-      port.range.min: 22
-      port.range.max: 22
+      port_range_min: 22
+      port_range_max: 22
 
   - name: "Ingress HTTP Rule for Kubernetes VM"
-    openstack.cloud.security.group.rule:
+    openstack.cloud.security_group_rule:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -193,15 +193,15 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      security.group: "{{ env }}"
+      security_group: "{{ env }}"
       ethertype: IPv4
       protocol: tcp
       direction: ingress
-      port.range.min: 80
-      port.range.max: 80
+      port_range_min: 80
+      port_range_max: 80
 
   - name: "Egress Rule for Kubernetes VM"
-    openstack.cloud.security.group.rule:
+    openstack.cloud.security_group_rule:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -209,7 +209,7 @@
         project_name: "{{ prj }}"
         project_domain_name: Default
         user_domain_name: Default
-      security.group: "{{ env }}"
+      security_group: "{{ env }}"
       ethertype: IPv4
       protocol: any
       direction: egress
@@ -225,7 +225,7 @@
         user_domain_name: Default
       name: "{{ env }}".master.v1
       size: 80
-      volume.type: synelogy
+      volume_type: synelogy
       state: present
       wait: true
       timeout: 180
@@ -241,7 +241,7 @@
         user_domain_name: Default
       name: "{{ env }}".worker.v1
       size: 80
-      volume.type: synelogy
+      volume_type: synelogy
       state: present
       wait: true
       timeout: 180
@@ -274,12 +274,12 @@
       name: kube.master
       state: present
       image: "{{ env }}"
-      boot.from.volume: true
-      volume.size: 80
+      boot_from_volume: true
+      volume_size: 80
       flavor: "{{ env }}".master
-      key.name: "{{ env }}".key.worker
-      auto.ip: false
-      security.groups: "{{ prj }}"
+      key_name: "{{ env }}".key.worker
+      auto_ip: false
+      security_groups: "{{ prj }}"
       network: "{{ env }}".private
       wait: true
       timeout: 300
@@ -296,19 +296,19 @@
       name: kube.worker
       state: present
       image: "{{ env }}"
-      boot.from.volume: true
-      volume.size: 80
+      boot_from_volume: true
+      volume_size: 80
       flavor: "{{ env }}".worker
-      key.name: "{{ env }}".key.worker
-      auto.ip: false
-      security.groups: "{{ env }}"
+      key_name: "{{ env }}".key.worker
+      auto_ip: false
+      security_groups: "{{ env }}"
       network: "{{ env }}".private
       wait: true
       timeout: 300
 
 
   - name: "Floating IP Attachment for Kubernetes Master VM"
-    openstack.cloud.floating.ip:
+    openstack.cloud.floating_ip:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -318,11 +318,11 @@
         user_domain_name: Default
       server: "{{ env }}".master
       network: "{{ env }}".public
-      nat.destination: "{{ env }}".private
+      nat_destination: "{{ env }}".private
       wait: true
 
   - name: "Floating IP Attachment for Kubernetes Worker VM"
-    openstack.cloud.floating.ip:
+    openstack.cloud.floating_ip:
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: kubeuser
@@ -332,7 +332,7 @@
         user_domain_name: Default
       server: "{{ env }}".worker
       network: "{{ env }}".public
-      nat.destination: "{{ env }}".private
+      nat_destination: "{{ env }}".private
       wait: true
 
 
