@@ -1,5 +1,5 @@
 [openstack]
-controller
+10.0.10.10
 
 [vms]
 10.10.0.153
