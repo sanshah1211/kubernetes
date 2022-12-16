@@ -1,4 +1,4 @@
-- hosts: 10.20.0.66
+- hosts: 10.20.0.119
   become: yes
   tasks:
     - name: initialize the cluster
