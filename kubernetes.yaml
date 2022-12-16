@@ -332,7 +332,7 @@
       flavor: k8s-worker
       key_name: worker-key
       auto_ip: false
-      security_groups: k8s
+      security_groups: "{{ env }}"
       network: k8s-private
       wait: true
       timeout: 1000
