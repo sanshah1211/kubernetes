@@ -110,7 +110,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: k8s-public"
+      name: k8s-public
       external: true
       project: kubernetes
       provider_network_type: vlan
