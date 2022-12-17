@@ -17,8 +17,7 @@
 
   - name: "Info Get"
     debug:
-      var: stack_info.changed
-
+      var: stack_info
 
   - name: "Kubernetes Stack"
     openstack.cloud.stack:
@@ -57,7 +56,7 @@
         project_domain_name: Default
         user_domain_name: Default
       disk: 80
-      name: k8s-master
+      name: k8s_master
       ram: 8192
       vcpus: 4
       state: present
@@ -72,7 +71,7 @@
         project_domain_name: Default
         user_domain_name: Default
       disk: 80
-      name: k8s-worker
+      name: k8s_worker
       ram: 8192
       vcpus: 4
       state: present
@@ -86,7 +85,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: master-key
+      name: master_key
       public_key_file: /home/rocky/.ssh/master.pub
 
   - name: "Keypair creation for Worker Node Login"
@@ -98,7 +97,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: worker-key
+      name: worker_key
       public_key_file: /home/rocky/.ssh/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
@@ -110,7 +109,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: k8s-public
+      name: k8s_public
       external: true
       project: kubernetes
       provider_network_type: vlan
@@ -126,8 +125,8 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      network_name: k8s-public
-      name: k8s-public
+      network_name: k8s_public
+      name: k8s_public
       cidr: 10.20.0.0/24
       gateway_ip: 10.20.0.1
       enable_dhcp: yes
@@ -141,7 +140,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: k8s-private
+      name: k8s_private
       project: kubernetes
 
   - name: "Subnet for Private Network"
@@ -153,8 +152,8 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      network_name: k8s-private
-      name: k8s-private
+      network_name: k8s_private
+      name: k8s_private
       cidr: 10.2.0.0/24
       gateway_ip: 10.2.0.1
       enable_dhcp: yes
@@ -169,10 +168,11 @@
         project_domain_name: Default
         user_domain_name: Default
       name: k8s
-      network: k8s-public
+      project: kubernetes
+      network: k8s_public
       interfaces:
-        - net: k8s-private
-          subnet: k8s-private
+        - net: k8s_private
+          subnet: k8s_private
 
   - name: "Security Group for Kubernetes VMs"
     openstack.cloud.security_group:
@@ -254,7 +254,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: k8s-master-v1
+      name: k8s_master_v1
       size: 80
       volume_type: synelogy
       state: present
@@ -270,7 +270,7 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: k8s-worker-v1
+      name: k8s_worker_v1
       size: 80
       volume_type: synelogy
       state: present
@@ -302,16 +302,16 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: kube.master
+      name: kube_master
       state: present
       image: k8s
       boot_from_volume: true
       volume_size: 80
-      flavor: k8s-master
-      key_name: master-key
+      flavor: k8s_master
+      key_name: master_key
       auto_ip: false
       security_groups: "{{ env }}"
-      network: k8s-private
+      network: k8s_private
       wait: true
       timeout: 300
 
@@ -324,16 +324,16 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      name: kube.worker
+      name: kube_worker
       state: present
       image: k8s
       boot_from_volume: true
       volume_size: 80
-      flavor: k8s-worker
-      key_name: worker-key
+      flavor: k8s_worker
+      key_name: worker_key
       auto_ip: false
       security_groups: "{{ env }}"
-      network: k8s-private
+      network: k8s_private
       wait: true
       timeout: 1000
 
@@ -347,9 +347,9 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      server: kube.master
-      network: k8s-public
-      nat_destination: k8s-private
+      server: kube_master
+      network: k8s_public
+      nat_destination: k8s_private
       wait: true
 
   - name: "Floating IP Attachment for Kubernetes Worker VM"
@@ -361,8 +361,58 @@
         project_name: kubernetes
         project_domain_name: Default
         user_domain_name: Default
-      server: kube.worker
-      network: k8s-public
-      nat_destination: k8s-private
+      server: kube_worker
+      network: k8s_public
+      nat_destination: k8s_private
       wait: true
+
+  - name: "Retrive Kube Master Configuration"
+    openstack.cloud.server_info:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      server: kube_master
+      filters: 
+        vm_state: active
+    register: network_info_master
+
+  - name: "Kube Server Information"
+    debug:
+      msg: "{{ network_info_master.openstack_servers[0].addresses.k8s_private[1].addr }}"
+
+  - name: "Add IP Address to Hosts File"
+    local_action: 
+      module: lineinfile
+      dest: /var/lib/jenkins/workspace/cloud/kubernetes/hosts
+      insertafter: '^\[kubernetes\]$'
+      line: "{{ network_info_master.openstack_servers[0].addresses.k8s_private[1].addr }}         ansible_user=centos      ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/master"  
+
+  - name: "Retrive Kube Worker Configuration"
+    openstack.cloud.server_info:
+      auth:
+        auth_url: http://10.0.10.200:5000/v3
+        username: kubeuser
+        password: redhat
+        project_name: kubernetes
+        project_domain_name: Default
+        user_domain_name: Default
+      server: kube_worker
+      filters:
+        vm_state: active
+    register: network_info_worker
+
+  - name: "Kube Server Information"
+    debug:
+      msg: "{{ network_info_worker.openstack_servers[0].addresses.k8s_private[1].addr }}"
+
+  - name: "Add IP Address to Hosts File"
+    local_action:
+      module: lineinfile
+      dest: /var/lib/jenkins/workspace/cloud/kubernetes/hosts
+      insertafter: '^\[kubernetes\]$'
+      line: "{{ network_info_worker.openstack_servers[0].addresses.k8s_private[1].addr }}           ansible_user=centos      ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/worker"
 

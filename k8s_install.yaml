@@ -69,6 +69,18 @@
          state: started
          enabled: true        
 
+     - name: "Remove config.tom File"
+       ansible.builtin.file:
+         path: /etc/containerd/config.tom
+         state: abscent
+
+     - name: "Restart Containerd Service to take effect"
+       ansible.builtin.systemd:
+         name: containerd
+         state: restarted
+         enabled: true
+
+
 #     - name: disable swap
 #       shell: |
 #               sudo swapoff -a
