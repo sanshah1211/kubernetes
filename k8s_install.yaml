@@ -29,10 +29,6 @@
       delay: 10
       timeout: 60
 
-  - name: "Update System with Latest Packages"
-    ansible.builtin.yum:
-      name: 
-
   - name: Create containerd config file
     file:
       path: "/etc/modules-load.d/containerd.conf"
