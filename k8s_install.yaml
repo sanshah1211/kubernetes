@@ -93,7 +93,7 @@
   - name: "Remove config.tom File"
     ansible.builtin.file:
       path: /etc/containerd/config.tom
-      state: abscent
+      state: absent
 
   - name: "Restart Containerd Service to take effect"
     ansible.builtin.systemd:
