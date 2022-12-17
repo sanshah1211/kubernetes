@@ -1,5 +1,5 @@
 ---
-- hosts: "10.20.0.119, 10.20.0.125"
+- hosts: kubernetes
   remote_user: centos
   become: yes
   become_method: sudo
@@ -8,77 +8,102 @@
   connection: ssh
 
   tasks:
-     - name: Create containerd config file
-       file:
-         path: "/etc/modules-load.d/containerd.conf"
-         state: "touch"
+  - name: "Update system with Latest Packages"
+    ansible.builtin.dnf:
+      name: "*"
+      state: latest
 
-     - name: Add conf for containerd
-       blockinfile:
-         path: "/etc/modules-load.d/containerd.conf"
-         block: |
-               overlay
-               br_netfilter
+  - name: "restart system to reboot to newest kernel"
+    shell: "sleep 10 && reboot"
+    async: 1
+    poll: 0
 
-     - name: modprobe
-       shell: |
-               sudo modprobe overlay
-               sudo modprobe br_netfilter
+  - name: "wait for 10 seconds"
+    pause:
+      seconds: 20
+
+  - name: "wait for the system to reboot"
+    wait_for_connection:
+      connect_timeout: 20
+      sleep: 10
+      delay: 10
+      timeout: 60
+
+    - name: "Update System with Latest Packages"
+      ansible.builtin.yum:
+        name: 
+
+    - name: Create containerd config file
+      file:
+        path: "/etc/modules-load.d/containerd.conf"
+        state: "touch"
+
+    - name: Add conf for containerd
+      blockinfile:
+        path: "/etc/modules-load.d/containerd.conf"
+        block: |
+              overlay
+              br_netfilter
+
+    - name: modprobe
+      shell: |
+              sudo modprobe overlay
+              sudo modprobe br_netfilter
 
 
-     - name: Set system configurations for Kubernetes networking
-       file:
-         path: "/etc/sysctl.d/99-kubernetes-cri.conf"
-         state: "touch"
+    - name: Set system configurations for Kubernetes networking
+      file:
+        path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+        state: "touch"
 
-     - name: Add conf for containerd
-       blockinfile:
-         path: "/etc/sysctl.d/99-kubernetes-cri.conf"
-         block: |
-                net.bridge.bridge-nf-call-iptables = 1
-                net.ipv4.ip_forward = 1
-                net.bridge.bridge-nf-call-ip6tables = 1
+    - name: Add conf for containerd
+      blockinfile:
+        path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+        block: |
+               net.bridge.bridge-nf-call-iptables = 1
+               net.ipv4.ip_forward = 1
+               net.bridge.bridge-nf-call-ip6tables = 1
 
-     - name: Apply new settings
-       command: sudo sysctl --system
+    - name: Apply new settings
+      command: sudo sysctl --system
 
-     - name: "Install Docker as a Container Runtime"
-       ansible.builtin.get_url:
-         url: https://download.docker.com/linux/centos/docker-ce.repo
-         dest: /etc/yum.repos.d/docker-ce.repo
+    - name: "Install Docker as a Container Runtime"
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
 
-     - name: "Install Docker Packages with containerd Container Runtime"
-       ansible.builtin.yum:
-         name:
-           - docker-ce
-           - docker-ce-cli
-           - containerd.io
-           - docker-compose-plugin
-           - epel-release
-         state: present
+    - name: "Install Docker Packages with containerd Container Runtime"
+      ansible.builtin.yum:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+          - epel-release
+        state: present
 
-     - name: "Enable and Start the Docker"
-       ansible.builtin.systemd:
-         name: docker
-         state: started
-         enabled: true
- 
-     - name: "Enable and Start the Containerd"
-       ansible.builtin.systemd:
-         name: containerd
-         state: started
-         enabled: true        
+    - name: "Enable and Start the Docker"
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
 
-     - name: "Remove config.tom File"
-       ansible.builtin.file:
-         path: /etc/containerd/config.tom
-         state: abscent
+    - name: "Enable and Start the Containerd"
+      ansible.builtin.systemd:
+        name: containerd
+        state: started
+        enabled: true        
 
-     - name: "Restart Containerd Service to take effect"
-       ansible.builtin.systemd:
-         name: containerd
-         state: restarted
-         enabled: true
+    - name: "Remove config.tom File"
+      ansible.builtin.file:
+        path: /etc/containerd/config.tom
+        state: abscent
+
+    - name: "Restart Containerd Service to take effect"
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted
+        enabled: true
 
 
 #     - name: disable swap
@@ -91,42 +116,42 @@
 #               sudo yum update && sudo yum install -y apt-transport-https curl
 #               curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
-     - name: Create kubernetes repo file
-       file:
-         path: "/etc/yum.repos.d/kubernetes.repo"
-         state: "touch"
+    - name: Create kubernetes repo file
+      file:
+        path: "/etc/yum.repos.d/kubernetes.repo"
+        state: "touch"
 
-     - name: Add K8s Source
-       ansible.builtin.blockinfile:
-         path: "/etc/yum.repos.d/kubernetes.repo"
-         block: |
-           [kubernetes]
-           name=Kubernetes
-           baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-           enabled=1
-           gpgcheck=1
-           gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-           exclude=kubelet kubeadm kubectl
+    - name: Add K8s Source
+      ansible.builtin.blockinfile:
+        path: "/etc/yum.repos.d/kubernetes.repo"
+        block: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          exclude=kubelet kubeadm kubectl
 
-     - name: "Verification if Repository File is properly created or not"
-       ansible.builtin.command:
-         cmd: "cat /etc/yum.repos.d/kubernetes.repo"
-       register: file_content
+    - name: "Verification if Repository File is properly created or not"
+      ansible.builtin.command:
+        cmd: "cat /etc/yum.repos.d/kubernetes.repo"
+      register: file_content
 
-     - name: "Content Redirection to Output"
-       debug:
-         var: file_content
-            
-     - name: install kubernetes
-       ansible.builtin.yum:
-         name: 
-           - kubeadm
-           - kubelet
-           - kubectl
-         disable_excludes: kubernetes
-      
-     - name: "Start and Enable Kubernetes"
-       ansible.builtin.systemd:
-         name: kubelet
-         enabled: true 
+    - name: "Content Redirection to Output"
+      debug:
+        var: file_content
+           
+    - name: install kubernetes
+      ansible.builtin.yum:
+        name: 
+          - kubeadm
+          - kubelet
+          - kubectl
+        disable_excludes: kubernetes
+     
+    - name: "Start and Enable Kubernetes"
+      ansible.builtin.systemd:
+        name: kubelet
+        enabled: true 
       
