@@ -9,7 +9,7 @@
 
   tasks:
   - name: "Update system with Latest Packages"
-    ansible.builtin.dnf:
+    ansible.builtin.yum:
       name: "*"
       state: latest
 
