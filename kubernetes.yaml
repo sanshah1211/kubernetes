@@ -8,7 +8,7 @@
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: admin
-        password: ixFIHxSZ0i6Qx8piUoLJmpqXwEuiamvgyjr0X8Im
+        password: gOCxId4198Fp2sWIOSQnFHlLtpsAwc2GWqiuBCnU
         project_name: admin
         project_domain_name: Default
         user_domain_name: Default
@@ -24,7 +24,7 @@
       auth:
         auth_url: http://10.0.10.200:5000/v3
         username: admin
-        password: ixFIHxSZ0i6Qx8piUoLJmpqXwEuiamvgyjr0X8Im
+        password: gOCxId4198Fp2sWIOSQnFHlLtpsAwc2GWqiuBCnU
         project_name: admin
         project_domain_name: Default
         user_domain_name: Default
