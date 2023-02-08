@@ -29,7 +29,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: kubernetes
-      template: /home/rocky/kubernetes/kubernetes_user.yaml
+      template: /var/lib/jenkins/workspace/kubernetes/kubernetes_user.yaml
     when: stack_info.changed == false
 
 
@@ -44,7 +44,7 @@
         user_domain_name: Default
       name: k8s
       state: present
-      filename: /home/rocky/CentOS-7-x86_64-GenericCloud.qcow2
+      filename: /mnt/template/qcow2/CentOS-7-x86_64-GenericCloud.qcow2
 
   - name: "Kube Master Flavor"
     openstack.cloud.compute_flavor:
@@ -86,7 +86,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: master_key
-      public_key_file: /home/rocky/.ssh/master.pub
+      public_key_file: /var/lib/jenkins/workspace/kubernetes/master.pub
 
   - name: "Keypair creation for Worker Node Login"
     openstack.cloud.keypair:
@@ -98,7 +98,7 @@
         project_domain_name: Default
         user_domain_name: Default
       name: worker_key
-      public_key_file: /home/rocky/.ssh/worker.pub
+      public_key_file: /var/lib/jenkins/workspace/kubernetes/worker.pub
 
   - name: "External Network Creation for Kubernetes Project"
     openstack.cloud.network:
