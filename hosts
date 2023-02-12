@@ -1,5 +1,5 @@
 [openstack]
-10.0.10.199           ansible_user=stack        ansible_user_pass=redhat
+10.0.10.199           ansible_user=jenkins        ansible_user_pass=/var/lib/jenkins/.ssh/id_rsa
 
 [kubernetes]
 
